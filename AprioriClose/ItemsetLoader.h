@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <format>
+#include <functional>
 
 /*
 * @brief Class that handles loading csv files and provides preprocessing tools on the data
@@ -32,23 +33,28 @@ public:
 		const T min = *MinMaxElements.first;
 		const T max = *MinMaxElements.second;
 		//Calculate the step
-		const T step = T((max - min) / binNumber);
+		const T step = float((max - min) / binNumber);
 		//Generate the bins
-		std::vector<std::pair<T,T>> bins;
+		std::vector<std::pair<T, T>> bins;
 		for (unsigned int i = 0; i < binNumber; ++i)
 		{
 			bins.emplace_back(min+step*i, min+step*(i+1));
 		}
+		//Create the text representation of each bin
+		std::vector<std::string> binsText;
+		for (unsigned int i = 0; i < binNumber-1; ++i)
+		{
+			binsText.emplace_back(std::format("[{:.2f}-{:.2f})", bins[i].first, bins[i].second));
+		}
+		binsText.emplace_back(std::format("[{:.2f}-{:.2f}]", bins[binNumber-1].first, bins[binNumber-1].second));
 		//Replace the discrete values with the bin they belong to
 		std::vector<std::string> binnedValues;
+		binnedValues.reserve(column.size());
 		for (const auto& value : column)
 		{
 			const auto correspBinIndex = std::min((unsigned int)((value - min) / step), binNumber-1);
-			const auto correspBin = bins[correspBinIndex];
-			if(correspBinIndex == binNumber-1)
-				binnedValues.emplace_back(std::format("[{:.2f}-{:.2f}]", correspBin.first, correspBin.second));
-			else
-				binnedValues.emplace_back(std::format("[{:.2f}-{:.2f})", correspBin.first, correspBin.second));
+			binnedValues.push_back(binsText[correspBinIndex]);
+
 		}
 		//Commit the changes to the document
 		document.SetColumn(columnName,std::move(binnedValues));

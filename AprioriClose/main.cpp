@@ -6,8 +6,8 @@ int main()
 {
     ItemsetLoader itemset{"airlines.csv"};
     
-    itemset.Discretize<float>("Flight",10);
-    itemset.Discretize<float>("Time",10);
-    itemset.Discretize<float>("Length",10);
+    itemset.Discretize<double>("Flight",10);
+    itemset.Discretize<double>("Time",10);
+    itemset.Discretize<double>("Length",10);
     itemset.SaveDocument("Airlines-discretized.csv");
 }
