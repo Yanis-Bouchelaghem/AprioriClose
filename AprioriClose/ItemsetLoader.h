@@ -7,21 +7,37 @@
 
 /*
 * @brief Class that handles loading csv files and provides preprocessing tools on the data
+* (such as discretization).
 */
 class ItemsetLoader
 {
 public:
+	/*
+	* @brief Constructor.
+	* @param path : The name or path of the csv file to read.
+	*/
 	ItemsetLoader(const std::string& path)
 		:
 		document(path)
 	{
 	}
+	/*
+	* @brief Writes the current state of the document to disk.
+	* @param path : The name or path to write to.
+	*/
 	void SaveDocument(const std::string& path)
 	{
 		document.Save(path);
 	}
 
 public:
+	
+	/**
+	 * @brief Applies Equal-Width discretization on the specified column using the given number of bins.
+	 * @tparam T : The type used to interpret the values of the column.
+	 * @param columnName : The name of the column to discretize.
+	 * @param binNumber : The number of bins to equally divide the data into.
+	*/
 	template<typename T>
 	void Discretize(const std::string& columnName, unsigned int binNumber)
 	{
@@ -40,7 +56,7 @@ public:
 		{
 			bins.emplace_back(min+step*i, min+step*(i+1));
 		}
-		//Create the text representation of each bin
+		//Create the string representation of each bin
 		std::vector<std::string> binsText;
 		for (unsigned int i = 0; i < binNumber-1; ++i)
 		{
@@ -57,7 +73,7 @@ public:
 
 		}
 		//Commit the changes to the document
-		document.SetColumn(columnName,std::move(binnedValues));
+		document.SetColumn(columnName,binnedValues);
 	}
 private:
 	rapidcsv::Document document;
