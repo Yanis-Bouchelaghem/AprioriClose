@@ -1,6 +1,7 @@
 #include <rapidcsv.h> 
 #include <iostream>
 #include "ItemsetLoader.h"
+#include "ACloseAlgorithm.h"
 
 int main()
 {
@@ -12,6 +13,7 @@ int main()
     itemset.Discretize<float>("Time",10);
     itemset.Discretize<float>("Length",10);
 
+    ACloseAlgorithm algo{itemset.GetDocument()};
     //Save the new document to disk
-    itemset.SaveDocument("Airlines-discretized.csv");
+    //itemset.SaveDocument("Airlines-discretized.csv");
 }

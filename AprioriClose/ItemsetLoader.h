@@ -30,6 +30,11 @@ public:
 		document.Save(path);
 	}
 
+	const rapidcsv::Document& GetDocument() const
+	{
+		return document;
+	}
+
 public:
 	
 	/**
