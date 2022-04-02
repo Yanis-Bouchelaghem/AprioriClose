@@ -4,6 +4,11 @@
 
 ACloseAlgorithm::ACloseAlgorithm(const rapidcsv::Document& document)
 {
+	GenerateAllColumnsValues(document);
+}
+
+void ACloseAlgorithm::GenerateAllColumnsValues(const rapidcsv::Document& document)
+{
 	for (int i = 0; i < document.GetColumnCount(); ++i)
 	{
 		//Get a column and find its unique values
@@ -12,13 +17,13 @@ ACloseAlgorithm::ACloseAlgorithm(const rapidcsv::Document& document)
 		{
 			//Check if the item already exists in the list of items, otherwise, add it 
 			//(using an offset to skip searching items that belong to another column)
-			int offset = itemIndexes.empty() ? 0 : (itemIndexes[i - 1] + 1);
-			if (std::find(itemIDs.begin() + offset, itemIDs.end(), value) == itemIDs.end())
+			int offset = columnsValuesLastIndex.empty() ? 0 : (columnsValuesLastIndex[i - 1] + 1);
+			if (std::find(columnsValues.begin() + offset, columnsValues.end(), value) == columnsValues.end())
 			{
-				itemIDs.emplace_back(value);
+				columnsValues.emplace_back(value);
 			}
 		}
 		//Save the last ID index of this column
-		itemIndexes.push_back(itemIDs.size()-1);
+		columnsValuesLastIndex.push_back(columnsValues.size() - 1);
 	}
 }
