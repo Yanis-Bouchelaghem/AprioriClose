@@ -4,13 +4,11 @@
 #include <algorithm>
 
 ACloseAlgorithm::ACloseAlgorithm(const rapidcsv::Document& document)
-	:
-	document(document)
 {
-	GenerateTIDs();
+	GenerateTIDs(document);
 }
 
-void ACloseAlgorithm::GenerateTIDs()
+void ACloseAlgorithm::GenerateTIDs(const rapidcsv::Document& document)
 {
 	//Reserve the necessary space for the TIDs.
 	tids.resize(document.GetRowCount());
