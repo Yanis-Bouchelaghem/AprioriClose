@@ -53,9 +53,9 @@ int ACloseAlgorithm::FindColumnValueID(const std::string& value, int column)
 		int idOffset = 0;
 		for (int i = 0; i < column; ++i)
 		{
-			idOffset += valuesIndex[i].size();
+			idOffset += int(valuesIndex[i].size());
 		}
-		return (result - valuesIndex[column].begin()) + idOffset;
+		return int((result - valuesIndex[column].begin()) + idOffset);
 	}
 	else
 		return -1;
