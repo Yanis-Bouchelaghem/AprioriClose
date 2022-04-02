@@ -14,7 +14,6 @@ int main()
     itemset.Discretize<float>("Length",10);
 
     ACloseAlgorithm algo{itemset.GetDocument()};
-    std::cin.get();
     //Save the new document to disk
     //itemset.SaveDocument("Airlines-discretized.csv");
 }

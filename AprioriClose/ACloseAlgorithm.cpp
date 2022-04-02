@@ -7,89 +7,62 @@ ACloseAlgorithm::ACloseAlgorithm(const rapidcsv::Document& document)
 	:
 	document(document)
 {
-	GenerateAllColumnsValues();
-	auto temp = GenerateTIDs();
-	
+	GenerateTIDs();
 }
 
-void ACloseAlgorithm::GenerateAllColumnsValues()
+void ACloseAlgorithm::GenerateTIDs()
 {
-	for (int i = 0; i < document.GetColumnCount(); ++i)
-	{
-		//Get a column and find its unique values
-		const auto column = document.GetColumn<std::string>(i);
-		for (const auto& value : column)
-		{
-			//Check if the item already exists in the list of items, otherwise, add it 
-			//(using an offset to skip searching items that belong to another column)
-			int offset = columnsValuesLastIndex.empty() ? 0 : (columnsValuesLastIndex[i - 1] + 1);
-			if (std::find(columnsValues.begin() + offset, columnsValues.end(), value) == columnsValues.end())
-			{
-				columnsValues.emplace_back(value);
-			}
-		}
-		//Save the last ID index of this column
-		columnsValuesLastIndex.push_back(columnsValues.size() - 1);
-	}
-}
-
-int ACloseAlgorithm::GetID(const std::string& value)
-{
-	//TODO : MAKE IT TAKE A COLUMN INDEX TO SKIP ALL OF THE OTHERS
-	auto result = std::find(columnsValues.begin(), columnsValues.end(), value);
-	assert(result != columnsValues.end()); //Could not find given value's ID
-	return result - columnsValues.begin();
-}
-
-std::vector<std::vector<int>> ACloseAlgorithm::GenerateTIDs()
-{
-	std::vector<std::vector<int>> tids{};
-	//Allocate the necessary memory to hold the TIDs
+	//Reserve the necessary space for the TIDs.
 	tids.resize(document.GetRowCount());
 	for (auto& tid : tids)
 	{
 		tid.resize(document.GetColumnCount());
 	}
+	//Reserve part of the necessary space for the values index.
+	valuesIndex.resize(document.GetColumnCount());
 
-	for (int i = 0; i < document.GetRowCount(); ++i)
+	//Go through the document and generate the columns values and the TIDs.
+	for (int iColumn = 0; iColumn < document.GetColumnCount(); iColumn++)
 	{
-		auto row = document.GetRow<std::string>(i);
-		for (int j = 0; j < row.size(); ++j)
+		//Generate the column values for this column and fill its part in the TIDs.
+		auto column = document.GetColumn<std::string>(iColumn);
+		for (int iRow = 0; iRow < column.size(); ++iRow)
 		{
-			tids[i][j] = GetID(row[j]);
-		}
-	}
-	return tids;
-}
-
-void ACloseAlgorithm::GenerateTIds2()
-{
-	std::vector<std::vector<int>> tids{};
-	//Allocate the necessary memory to hold the TIDs
-	tids.resize(document.GetRowCount());
-	for (auto& tid : tids)
-	{
-		tid.resize(document.GetColumnCount());
-	}
-
-	for (int iColumn = 0; iColumn < document.GetColumnCount(); ++iColumn)
-	{
-		//Get a column and find its unique values
-		const auto column = document.GetColumn<std::string>(iColumn);
-		for (int iRow = 0; iRow < document.GetColumnCount(); ++iRow)
-		{
-			//Check if the item already exists in the list of items, otherwise, add it 
-			//(using an offset to skip searching items that belong to another column)
-			const int offset = columnsValuesLastIndex.empty() ? 0 : columnsValuesLastIndex[iRow-1];
-			if (std::find(columnsValues.begin() + offset, columnsValues.end(), column[iRow]) == columnsValues.end())
+			//Check if this value is not already indexed
+			const int valueID = FindColumnValueID(column[iRow], iColumn);
+			if (valueID == -1)
 			{
-				columnsValues
+				//Add it to the index.
+				valuesIndex[iColumn].emplace_back(column[iRow]);
+				//Fill the TID of this cell
+				tids[iRow][iColumn] = FindColumnValueID(column[iRow], iColumn);
+			}
+			else
+			{
+				//Fill the TID of this cell
+				tids[iRow][iColumn] = valueID;
 			}
 		}
-		//Save the last ID index of this column
-		columnsValuesLastIndex.push_back(columnsValues.size() - 1);
 	}
 }
+
+int ACloseAlgorithm::FindColumnValueID(const std::string& value, int column)
+{
+	const auto result = std::find(valuesIndex[column].begin(), valuesIndex[column].end(), value);
+	if (result != valuesIndex[column].end())
+	{
+		//Find the ID of the value by adding the length of the previous columns.
+		int idOffset = 0;
+		for (int i = 0; i < column; ++i)
+		{
+			idOffset += valuesIndex[i].size();
+		}
+		return (result - valuesIndex[column].begin()) + idOffset;
+	}
+	else
+		return -1;
+}
+
 
 
 

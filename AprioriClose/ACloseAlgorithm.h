@@ -9,19 +9,12 @@ public:
 	ACloseAlgorithm(const rapidcsv::Document& document);
 
 private:
-	/**
-	 * @brief (Used internally) Finds all of the possible values each column in the document can contain, stores them in columnsValues.
-	 * The index of the last value of each column is stored in columnsValuesLastIndex.
-	*/
-	void GenerateAllColumnsValues();
-	int GetID(const std::string& value);
-	std::vector<std::vector<int>> GenerateTIDs();
-	void GenerateTIds2();
-	
+
+	void GenerateTIDs();
+	int FindColumnValueID(const std::string& value, int column);
 private:
-	
-	std::vector<std::string> columnsValues; //Stores the possible values each column in the document can have.
-	std::vector<int> columnsValuesLastIndex;//Stores the index of the last possible value of each column in the columnsValues vector.
+	std::vector<std::vector<std::string>> valuesIndex;
+	std::vector<std::vector<int>> tids;
 
 	const rapidcsv::Document& document;
 };
