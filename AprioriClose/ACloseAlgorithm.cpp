@@ -49,13 +49,7 @@ int ACloseAlgorithm::FindColumnValueID(const std::string& value, int column)
 	const auto result = std::find(valuesIndex[column].begin(), valuesIndex[column].end(), value);
 	if (result != valuesIndex[column].end())
 	{
-		//Find the ID of the value by adding the length of the previous columns.
-		int idOffset = 0;
-		for (int i = 0; i < column; ++i)
-		{
-			idOffset += int(valuesIndex[i].size());
-		}
-		return int((result - valuesIndex[column].begin()) + idOffset);
+		return int((result - valuesIndex[column].begin()));
 	}
 	else
 		return -1;
