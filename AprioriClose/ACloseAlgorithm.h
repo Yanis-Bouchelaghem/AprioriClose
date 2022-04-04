@@ -17,6 +17,8 @@ private:
 	 * @brief (Internally used) Indexes all possible values of each column and generates the TIDs in one sweep of the document.
 	*/
 	void GenerateTIDs(const rapidcsv::Document& document);
+	void GenerateTIDsMultiThreaded(const rapidcsv::Document& document);
+	void GenerateColumnTID(const rapidcsv::Document& document, const int iColumn);
 	/**
 	 * @brief (Internally used) Searches if the given value is a possible value in the given column, if it is, its ID is returned,
 	 * otherwise -1 is returned.
