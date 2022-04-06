@@ -34,7 +34,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ItemsetLoader.h">
+    <ClInclude Include="DocumentLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ACloseAlgorithm.h">

@@ -22,11 +22,11 @@ void ACloseAlgorithm::GenerateTIDs(const rapidcsv::Document& document)
 	valuesIndex.resize(document.GetColumnCount());
 
 	//Go through the document and generate the columns values and the TIDs.
-	for (int iColumn = 0; iColumn < document.GetColumnCount(); iColumn++)
+	for (size_t iColumn = 0; iColumn < document.GetColumnCount(); iColumn++)
 	{
 		//Generate the column values for this column and fill its part in the TIDs.
 		auto column = document.GetColumn<std::string>(iColumn);
-		for (int iRow = 0; iRow < column.size(); ++iRow)
+		for (size_t iRow = 0; iRow < column.size(); ++iRow)
 		{
 			//Check if this value is not already indexed
 			const int valueID = FindColumnValueID(column[iRow], iColumn);
@@ -60,9 +60,9 @@ void ACloseAlgorithm::GenerateTIDsMultiThreaded(const rapidcsv::Document& docume
 	//Create a worker thread for each column
 	std::vector<std::thread> workers;
 	//Go through the document and generate the columns values and the TIDs.
-	for (int iColumn = 0; iColumn < document.GetColumnCount(); ++iColumn)
+	for (size_t iColumn = 0; iColumn < document.GetColumnCount(); ++iColumn)
 	{
-		const auto worker = [this](const rapidcsv::Document& document,const int iColumn) {
+		const auto worker = [this](const rapidcsv::Document& document,const size_t iColumn) {
 			this->GenerateColumnTID(document,iColumn);
 		};
 		workers.push_back(std::thread{worker, std::ref(document), iColumn});
@@ -74,11 +74,11 @@ void ACloseAlgorithm::GenerateTIDsMultiThreaded(const rapidcsv::Document& docume
 	}
 }
 
-void ACloseAlgorithm::GenerateColumnTID(const rapidcsv::Document& document ,const int iColumn)
+void ACloseAlgorithm::GenerateColumnTID(const rapidcsv::Document& document ,const size_t iColumn)
 {
 	//Generate the column values for this column and fill its part in the TIDs.
 	auto column = document.GetColumn<std::string>(iColumn);
-	for (int iRow = 0; iRow < column.size(); ++iRow)
+	for (size_t iRow = 0; iRow < column.size(); ++iRow)
 	{
 		//Check if this value is not already indexed
 		const int valueID = FindColumnValueID(column[iRow], iColumn);
@@ -97,7 +97,7 @@ void ACloseAlgorithm::GenerateColumnTID(const rapidcsv::Document& document ,cons
 	}
 }
 
-int ACloseAlgorithm::FindColumnValueID(const std::string& value, int column)
+int ACloseAlgorithm::FindColumnValueID(const std::string& value, size_t column)
 {
 	const auto result = std::find(valuesIndex[column].begin(), valuesIndex[column].end(), value);
 	if (result != valuesIndex[column].end())

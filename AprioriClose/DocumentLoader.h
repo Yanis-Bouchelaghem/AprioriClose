@@ -10,14 +10,14 @@
 * @brief Class that handles loading csv files and provides preprocessing tools on the data
 * (such as discretization).
 */
-class ItemsetLoader
+class DocumentLoader
 {
 public:
 	/*
 	* @brief Constructor.
 	* @param path : The name or path of the csv file to read.
 	*/
-	ItemsetLoader(const std::string& path)
+	DocumentLoader(const std::string& path)
 		:
 		document(path)
 	{
@@ -93,7 +93,7 @@ public:
 		assert(columnNames.size() == binSizes.size());//Each column needs to have a bin size.
 		//Launch the threads.
 		std::vector<std::thread> workers;
-		for (int i = 0; i < columnNames.size(); ++i)
+		for (size_t i = 0; i < columnNames.size(); ++i)
 		{
 			auto worker = [this](const std::string& columnName, const int binSize) {
 				this->Discretize<T>(columnName,binSize);

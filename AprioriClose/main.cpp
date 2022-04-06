@@ -1,6 +1,6 @@
 #include <rapidcsv.h> 
 #include <iostream>
-#include "ItemsetLoader.h"
+#include "DocumentLoader.h"
 #include "ACloseAlgorithm.h"
 #include "Timer.h"
 int main()
@@ -8,7 +8,7 @@ int main()
     std::cout << "Loading csv ... ";
     Timer<std::chrono::milliseconds> timer{};
     //Load the airlines csv
-    ItemsetLoader itemset{ "airlines.csv" };
+    DocumentLoader itemset{ "airlines.csv" };
     std::cout << "took " << timer.Mark() << " miliseconds\n";
 
     std::cout << "Discretizing ... ";
