@@ -19,13 +19,7 @@ ACloseAlgorithm::ACloseAlgorithm(const rapidcsv::Document& document)
 void ACloseAlgorithm::Go()
 {
 	//Generate 1st itemsets
-	for (size_t i = 0; i < tids.size(); ++i)
-	{
-		for (const auto& tid : tids[i])
-		{
-			itemset.emplace_back(std::vector{std::pair{i,tid.first}},tids,document);
-		}
-	}
+	itemset = GenerateKItemsets(1);
 	//Calculate support for each itemset
 	for (auto& item : itemset)
 	{
@@ -86,6 +80,24 @@ void ACloseAlgorithm::GenerateColumnTID(const rapidcsv::Document& document ,cons
 		//Fill the TID of this cell
 		tids[iColumn][column[iRow]].emplace_back(iRow);
 	}
+}
+
+std::vector<Itemset> ACloseAlgorithm::GenerateKItemsets(size_t k)
+{
+	std::vector<Itemset> generatedItemsets;
+	//Generate k items
+	if (k == 1)
+	{
+		//Generate 1st itemsets
+		for (size_t i = 0; i < tids.size(); ++i)
+		{
+			for (const auto& tid : tids[i])
+			{
+				generatedItemsets.emplace_back(std::vector{ std::pair{i,tid.first} }, tids, document);
+			}
+		}
+	}
+	return generatedItemsets;
 }
 
 

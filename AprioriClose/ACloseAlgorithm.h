@@ -19,6 +19,7 @@ private:
 	void GenerateTIDs(const rapidcsv::Document& document);
 	void GenerateTIDsMultiThreaded(const rapidcsv::Document& document);
 	void GenerateColumnTID(const rapidcsv::Document& document, const size_t iColumn);
+	std::vector<Itemset> GenerateKItemsets(size_t k);
 private:
 	std::vector<std::map<std::string, std::vector<size_t>>> tids; //Holds the TID representation of the document.
 	std::vector<Itemset> itemset;
