@@ -29,5 +29,5 @@ private:
 	int FindColumnValueID(const std::string& value, size_t column);
 private:
 	std::vector<std::vector<std::string>> valuesIndex; //Holds all possible values each column can have.
-	std::vector<std::vector<int>> tids; //Holds the TID representation of the document.
+	std::vector<std::vector<size_t>> tids; //Holds the TID representation of the document.
 };

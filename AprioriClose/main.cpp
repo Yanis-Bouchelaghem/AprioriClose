@@ -2,6 +2,7 @@
 #include <iostream>
 #include "DocumentLoader.h"
 #include "ACloseAlgorithm.h"
+#include "Itemset.h"
 #include "Timer.h"
 int main()
 {
@@ -20,6 +21,8 @@ int main()
     timer.Mark();
     ACloseAlgorithm algo{ itemset.GetDocument() };
     std::cout << "took " << timer.Mark() << " miliseconds\n";
+
+
     //Save the new document to disk
     //itemset.SaveDocument("Airlines-discretized.csv");
 }

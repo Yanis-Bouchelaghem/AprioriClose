@@ -35,12 +35,12 @@ void ACloseAlgorithm::GenerateTIDs(const rapidcsv::Document& document)
 				//Add it to the index.
 				valuesIndex[iColumn].emplace_back(column[iRow]);
 				//Fill the TID of this cell
-				tids[iRow][iColumn] = FindColumnValueID(column[iRow], iColumn);
+				tids[iRow][iColumn] = size_t(FindColumnValueID(column[iRow], iColumn));
 			}
 			else
 			{
 				//Fill the TID of this cell
-				tids[iRow][iColumn] = valueID;
+				tids[iRow][iColumn] = size_t(valueID);
 			}
 		}
 	}
@@ -87,12 +87,12 @@ void ACloseAlgorithm::GenerateColumnTID(const rapidcsv::Document& document ,cons
 			//Add it to the index.
 			valuesIndex[iColumn].emplace_back(column[iRow]);
 			//Fill the TID of this cell
-			tids[iRow][iColumn] = FindColumnValueID(column[iRow], iColumn);
+			tids[iRow][iColumn] = size_t(FindColumnValueID(column[iRow], iColumn));
 		}
 		else
 		{
 			//Fill the TID of this cell
-			tids[iRow][iColumn] = valueID;
+			tids[iRow][iColumn] = size_t(valueID);
 		}
 	}
 }
