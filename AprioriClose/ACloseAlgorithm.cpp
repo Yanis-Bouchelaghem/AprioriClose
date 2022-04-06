@@ -6,11 +6,37 @@
 #include "Itemset.h"
 
 ACloseAlgorithm::ACloseAlgorithm(const rapidcsv::Document& document)
+	:
+	document(document)
 {
 	//GenerateTIDs(document);
 	GenerateTIDsMultiThreaded(document);
-	Itemset itemset({{0,"CO"},{2,"SFO"}},tids,document);
-	itemset.CalculateMetrics();
+	Go();
+	//Itemset itemset({{0,"CO"},{2,"SFO"}},tids,document);
+	//itemset.CalculateMetrics();
+}
+
+void ACloseAlgorithm::Go()
+{
+	//Generate 1st itemsets
+	for (size_t i = 0; i < tids.size(); ++i)
+	{
+		for (const auto& tid : tids[i])
+		{
+			itemset.emplace_back(std::vector{std::pair{i,tid.first}},tids,document);
+		}
+	}
+	//Calculate support for each itemset
+	for (auto& item : itemset)
+	{
+		item.CalculateMetrics();
+	}
+
+	//Eliminate itemsets with support < minsup
+	
+	//Generate 2nd itemsets
+	//Calculate support for each itemset
+	//Eliminate itemsets with support < minsup
 }
 
 void ACloseAlgorithm::GenerateTIDs(const rapidcsv::Document& document)

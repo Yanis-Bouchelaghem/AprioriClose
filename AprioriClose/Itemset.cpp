@@ -16,7 +16,7 @@ void Itemset::CalculateMetrics()
 {
 	if (items.size() == 1)
 	{
-		support = static_cast<float>(tids[items[0].first].size()) / document.GetRowCount();
+		support = static_cast<float>(tids[items[0].first].at(items[0].second).size()) / document.GetRowCount();
 	}
 	else
 	{
