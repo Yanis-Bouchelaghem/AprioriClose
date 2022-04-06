@@ -11,7 +11,7 @@ public:
 	 * @param document : The document to read.
 	*/
 	ACloseAlgorithm(const rapidcsv::Document& document);
-
+	
 private:
 	/**
 	 * @brief (Internally used) Indexes all possible values of each column and generates the TIDs in one sweep of the document.

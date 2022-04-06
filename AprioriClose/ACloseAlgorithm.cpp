@@ -3,11 +3,14 @@
 #include <vector>
 #include <algorithm>
 #include <thread>
+#include "Itemset.h"
 
 ACloseAlgorithm::ACloseAlgorithm(const rapidcsv::Document& document)
 {
 	//GenerateTIDs(document);
 	GenerateTIDsMultiThreaded(document);
+	Itemset itemset({{0,"CO"},{2,"SFO"}},tids,document);
+	itemset.CalculateMetrics();
 }
 
 void ACloseAlgorithm::GenerateTIDs(const rapidcsv::Document& document)
