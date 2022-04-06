@@ -19,15 +19,6 @@ private:
 	void GenerateTIDs(const rapidcsv::Document& document);
 	void GenerateTIDsMultiThreaded(const rapidcsv::Document& document);
 	void GenerateColumnTID(const rapidcsv::Document& document, const size_t iColumn);
-	/**
-	 * @brief (Internally used) Searches if the given value is a possible value in the given column, if it is, its ID is returned,
-	 * otherwise -1 is returned.
-	 * @param value : The value to search for.
-	 * @param column : The column in which to search for the value.
-	 * @return The ID of the value if found, otherwise returns -1.
-	*/
-	int FindColumnValueID(const std::string& value, size_t column);
 private:
-	std::vector<std::vector<std::string>> valuesIndex; //Holds all possible values each column can have.
-	std::vector<std::vector<size_t>> tids; //Holds the TID representation of the document.
+	std::vector<std::map<std::string, std::vector<size_t>>> tids; //Holds the TID representation of the document.
 };
