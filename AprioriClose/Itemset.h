@@ -10,6 +10,7 @@ public:
 	Itemset(std::vector<std::pair<size_t, std::string>> items, const std::vector<std::map<std::string, std::vector<size_t>>>& tids, const rapidcsv::Document& document);
 	void CalculateMetrics();
 	float GetSupport() const;
+	Itemset operator +(const Itemset& rhs) const;
 private:
 	float support;
 	std::vector<std::pair<size_t,std::string>> items;

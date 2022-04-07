@@ -42,3 +42,15 @@ float Itemset::GetSupport() const
 	assert(support != -1.f); //Support metric has not been calculated yet.
 	return support;
 }
+
+Itemset Itemset::operator+(const Itemset& rhs) const
+{
+	std::vector<std::pair<size_t, std::string>> itemsUnion;
+	std::set_union(
+		items.begin(), items.end(),
+		rhs.items.begin(), rhs.items.end(),
+		std::back_inserter(itemsUnion)
+	);
+	return Itemset(itemsUnion, tids, document);
+}
+
