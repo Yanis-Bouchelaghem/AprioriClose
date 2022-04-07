@@ -22,20 +22,19 @@ ACloseAlgorithm::ACloseAlgorithm(const rapidcsv::Document& document)
 
 void ACloseAlgorithm::Go()
 {
-	//Generate the itemsets of k size
-	kItemsets.emplace_back(GenerateKItemsets(k));
+	do
+	{	
+		//Generate k-itemsets
+		kItemsets.emplace_back(GenerateKItemsets(k));
+		//Calculate their metrics
+		for (auto& item : kItemsets.back())
+		{
+			item.CalculateMetrics();
+		}
+		//Eliminate itemsets with support < minsup
+		++k;
+	}while(!kItemsets.back().empty());
 
-	//Calculate support for each itemset
-	for (auto& item : kItemsets[0])
-	{
-		item.CalculateMetrics();
-	}
-
-	//Eliminate itemsets with support < minsup
-	
-	//Generate 2nd itemsets
-	//Calculate support for each itemset
-	//Eliminate itemsets with support < minsup
 }
 
 void ACloseAlgorithm::GenerateTIDs(const rapidcsv::Document& document)
@@ -104,11 +103,24 @@ std::vector<Itemset> ACloseAlgorithm::GenerateKItemsets(size_t k)
 	}
 	else
 	{
-		//Generate kth itemsets by combining the k-1 itemsets.
+		//Generate k-itemsets by combining the k-1 itemsets.
 		const auto& previousItemsets = kItemsets[k - 2];
-		for (size_t i = 0; i < previousItemsets.size(); ++i)
+		for (size_t i = 0; i < previousItemsets.size() - 1; ++i)
 		{
-			
+			for (size_t j = i + 1; j < previousItemsets.size(); ++j)
+			{
+				//Check if they have k - 2 first items in common
+				if (previousItemsets[i].HasFirstKInCommon(previousItemsets[j],k-2))
+				{
+					//Get their union
+					Itemset itemsetUnion = previousItemsets[i] + previousItemsets[j];
+					//Check if this combination of items is possible
+					if (itemsetUnion.IsValid())
+					{
+						generatedItemsets.emplace_back(itemsetUnion);
+					}
+				}
+			}
 		}
 	}
 	return generatedItemsets;

@@ -43,7 +43,7 @@ float Itemset::GetSupport() const
 	return support;
 }
 
-bool Itemset::HasFirstKInCommon(const Itemset& other, size_t k)
+bool Itemset::HasFirstKInCommon(const Itemset& other, size_t k) const
 {
 	assert(items.size() >= k && other.items.size() >= k);//Both itemsets have to be longer or equal to k.
 	bool inCommon = true;
@@ -56,6 +56,17 @@ bool Itemset::HasFirstKInCommon(const Itemset& other, size_t k)
 		}
 	}
 	return inCommon;
+}
+
+bool Itemset::IsValid() const
+{
+	auto result = std::adjacent_find(items.begin(),
+	items.end(),
+	[](const std::pair<size_t, std::string>& first, const std::pair<size_t, std::string>& second) {
+		return first.first == second.first;
+		});
+
+	return result == items.end();
 }
 
 Itemset Itemset::operator+(const Itemset& rhs) const
