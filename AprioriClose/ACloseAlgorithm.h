@@ -22,6 +22,8 @@ private:
 	std::vector<Itemset> GenerateKItemsets(size_t k);
 private:
 	std::vector<std::map<std::string, std::vector<size_t>>> tids; //Holds the TID representation of the document.
-	std::vector<Itemset> itemset;
+	std::vector<std::vector<Itemset>> kItemsets;//Holds the Kth itemsets
 	const rapidcsv::Document& document;
+
+	size_t k; //The size of the itemsets to generate
 };

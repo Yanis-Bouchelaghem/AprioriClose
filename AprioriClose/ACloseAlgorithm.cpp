@@ -7,21 +7,26 @@
 
 ACloseAlgorithm::ACloseAlgorithm(const rapidcsv::Document& document)
 	:
-	document(document)
+	document(document),
+	k(1)
 {
 	//GenerateTIDs(document);
 	GenerateTIDsMultiThreaded(document);
 	Go();
-	//Itemset itemset({{0,"CO"},{2,"SFO"}},tids,document);
-	//itemset.CalculateMetrics();
+	Itemset itemset1({{0,"CO"},{2,"SFO"}},tids,document);
+	Itemset itemset2({{0,"CO"},{3,"KEK"}},tids,document);
+	Itemset temp = itemset1 + itemset2;
+	itemset1.HasFirstKInCommon(itemset2,1);
+
 }
 
 void ACloseAlgorithm::Go()
 {
-	//Generate 1st itemsets
-	itemset = GenerateKItemsets(1);
+	//Generate the itemsets of k size
+	kItemsets.emplace_back(GenerateKItemsets(k));
+
 	//Calculate support for each itemset
-	for (auto& item : itemset)
+	for (auto& item : kItemsets[0])
 	{
 		item.CalculateMetrics();
 	}
@@ -95,6 +100,15 @@ std::vector<Itemset> ACloseAlgorithm::GenerateKItemsets(size_t k)
 			{
 				generatedItemsets.emplace_back(std::vector{ std::pair{i,tid.first} }, tids, document);
 			}
+		}
+	}
+	else
+	{
+		//Generate kth itemsets by combining the k-1 itemsets.
+		const auto& previousItemsets = kItemsets[k - 2];
+		for (size_t i = 0; i < previousItemsets.size(); ++i)
+		{
+			
 		}
 	}
 	return generatedItemsets;

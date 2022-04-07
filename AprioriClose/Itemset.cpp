@@ -43,6 +43,21 @@ float Itemset::GetSupport() const
 	return support;
 }
 
+bool Itemset::HasFirstKInCommon(const Itemset& other, size_t k)
+{
+	assert(items.size() >= k && other.items.size() >= k);//Both itemsets have to be longer or equal to k.
+	bool inCommon = true;
+	for (size_t i = 0; i < k; ++i)
+	{
+		if (items[i] != other.items[i])
+		{
+			inCommon = false;
+			break;
+		}
+	}
+	return inCommon;
+}
+
 Itemset Itemset::operator+(const Itemset& rhs) const
 {
 	std::vector<std::pair<size_t, std::string>> itemsUnion;
