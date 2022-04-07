@@ -11,7 +11,7 @@ public:
 	 * @param document : The document to read.
 	*/
 	ACloseAlgorithm(const rapidcsv::Document& document);
-	void Go();
+	void Go(const float minSup);
 private:
 	/**
 	 * @brief (Internally used) Indexes all possible values of each column and generates the TIDs in one sweep of the document.
@@ -20,6 +20,7 @@ private:
 	void GenerateTIDsMultiThreaded(const rapidcsv::Document& document);
 	void GenerateColumnTID(const rapidcsv::Document& document, const size_t iColumn);
 	std::vector<Itemset> GenerateKItemsets(size_t k);
+	void PruneUnfrequentItemsets(std::vector<Itemset>& itemsets, const float minSup);
 private:
 	std::vector<std::map<std::string, std::vector<size_t>>> tids; //Holds the TID representation of the document.
 	std::vector<std::vector<Itemset>> kItemsets;//Holds the Kth itemsets

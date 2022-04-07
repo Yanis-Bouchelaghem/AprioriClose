@@ -12,28 +12,21 @@ ACloseAlgorithm::ACloseAlgorithm(const rapidcsv::Document& document)
 {
 	//GenerateTIDs(document);
 	GenerateTIDsMultiThreaded(document);
-	Go();
-	Itemset itemset1({{0,"CO"},{2,"SFO"}},tids,document);
-	Itemset itemset2({{0,"CO"},{3,"KEK"}},tids,document);
-	Itemset temp = itemset1 + itemset2;
-	itemset1.HasFirstKInCommon(itemset2,1);
-
 }
 
-void ACloseAlgorithm::Go()
+void ACloseAlgorithm::Go(const float minSup)
 {
+	const size_t rowCount = document.GetRowCount();
 	do
 	{	
-		//Generate k-itemsets
 		kItemsets.emplace_back(GenerateKItemsets(k));
-		//Calculate their metrics
 		for (auto& item : kItemsets.back())
 		{
-			item.CalculateMetrics();
+			item.CalculateMetrics(tids, rowCount);
 		}
-		//Eliminate itemsets with support < minsup
+		PruneUnfrequentItemsets(kItemsets.back(), minSup);
 		++k;
-	}while(!kItemsets.back().empty());
+	} while(!kItemsets.back().empty());
 
 }
 
@@ -97,7 +90,7 @@ std::vector<Itemset> ACloseAlgorithm::GenerateKItemsets(size_t k)
 		{
 			for (const auto& tid : tids[i])
 			{
-				generatedItemsets.emplace_back(std::vector{ std::pair{i,tid.first} }, tids, document);
+				generatedItemsets.emplace_back(std::vector{ std::pair{i,tid.first} });
 			}
 		}
 	}
@@ -126,6 +119,13 @@ std::vector<Itemset> ACloseAlgorithm::GenerateKItemsets(size_t k)
 	return generatedItemsets;
 }
 
-
-
+void ACloseAlgorithm::PruneUnfrequentItemsets(std::vector<Itemset>& itemsets, const float minSup)
+{
+	//Move all unfrequent itemsets to the end of the vector.
+	auto toErase = std::remove_if(itemsets.begin(), itemsets.end(), [minSup](const Itemset& itemset) {
+		return itemset.GetSupport() < minSup;
+	});
+	//Erase the unfrequent itemsets.
+	itemsets.erase(toErase, itemsets.end());
+}
 

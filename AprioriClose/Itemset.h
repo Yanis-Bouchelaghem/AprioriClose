@@ -7,8 +7,8 @@
 class Itemset
 {
 public:
-	Itemset(std::vector<std::pair<size_t, std::string>> items, const std::vector<std::map<std::string, std::vector<size_t>>>& tids, const rapidcsv::Document& document);
-	void CalculateMetrics();
+	Itemset(std::vector<std::pair<size_t, std::string>> items);
+	void CalculateMetrics(const std::vector<std::map<std::string, std::vector<size_t>>>& tids, size_t rowCount);
 	float GetSupport() const;
 	bool HasFirstKInCommon(const Itemset& other, size_t k) const;
 	bool IsValid() const;
@@ -16,6 +16,4 @@ public:
 private:
 	float support;
 	std::vector<std::pair<size_t,std::string>> items;
-	const std::vector<std::map<std::string, std::vector<size_t>>>& tids;
-	const rapidcsv::Document& document;
 };

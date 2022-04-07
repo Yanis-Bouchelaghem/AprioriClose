@@ -22,7 +22,10 @@ int main()
     ACloseAlgorithm algo{ itemset.GetDocument() };
     std::cout << "took " << timer.Mark() << " miliseconds\n";
 
-
+    std::cout << "Generating itemsets ... ";
+    timer.Mark();
+    algo.Go(0.05f);
+    std::cout << "took " << timer.Mark() << " miliseconds\n";
     //Save the new document to disk
     //itemset.SaveDocument("Airlines-discretized.csv");
 }

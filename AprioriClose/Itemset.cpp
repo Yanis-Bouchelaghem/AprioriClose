@@ -2,39 +2,31 @@
 #include <algorithm>
 #include <assert.h>
 
-Itemset::Itemset(std::vector<std::pair<size_t, std::string>> items, const std::vector<std::map<std::string, std::vector<size_t>>>& tids, const rapidcsv::Document& document)
+Itemset::Itemset(std::vector<std::pair<size_t, std::string>> items)
 	:
 	items(items),
-	tids(tids),
-	document(document),
 	support(-1.f)
 {
-	assert(items.size() > 0);//Items cannot be empty.
+	assert(items.size() > 0);//Itemset needs to be composed of at least one item.
 }
 
-void Itemset::CalculateMetrics()
+void Itemset::CalculateMetrics(const std::vector<std::map<std::string, std::vector<size_t>>>& tids, size_t rowCount)
 {
-	if (items.size() == 1)
+	//The TID of this itemset is the intersection between the TID of all of its items.
+	auto intersectedTID = tids[items[0].first].at(items[0].second);
+	for (size_t i = 1; i < items.size(); ++i)
 	{
-		support = static_cast<float>(tids[items[0].first].at(items[0].second).size()) / document.GetRowCount();
-	}
-	else
-	{
-		//Intersect between the TID of the items
-		auto intersection = tids[items[0].first].at(items[0].second);
-		for (size_t i = 1; i < items.size(); ++i)
-		{
-			std::vector<size_t> temp;
-			const std::vector<size_t>& otherTID = tids[items[i].first].at(items[i].second);
+		std::vector<size_t> temp;
+		const std::vector<size_t>& otherTID = tids[items[i].first].at(items[i].second);
 
-			std::set_intersection(intersection.begin(), intersection.end(),
-				otherTID.begin(), otherTID.end(),
-				back_inserter(temp));
+		std::set_intersection(intersectedTID.begin(), intersectedTID.end(),
+			otherTID.begin(), otherTID.end(),
+			back_inserter(temp));
 
-			intersection = std::move(temp);
-		}
-		support = static_cast<float>(intersection.size()) / document.GetRowCount();
+		intersectedTID = std::move(temp);
 	}
+	//The support is simply the size of the TID of this itemset divided by the total row count.
+	support = static_cast<float>(intersectedTID.size()) / rowCount;
 }
 
 float Itemset::GetSupport() const
@@ -77,6 +69,6 @@ Itemset Itemset::operator+(const Itemset& rhs) const
 		rhs.items.begin(), rhs.items.end(),
 		std::back_inserter(itemsUnion)
 	);
-	return Itemset(itemsUnion, tids, document);
+	return Itemset(itemsUnion);
 }
 
