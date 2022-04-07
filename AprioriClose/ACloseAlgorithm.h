@@ -12,6 +12,7 @@ public:
 	*/
 	ACloseAlgorithm(const rapidcsv::Document& document);
 	void Go(const float minSup);
+	void PrintItemsets() const;
 private:
 	/**
 	 * @brief (Internally used) Indexes all possible values of each column and generates the TIDs in one sweep of the document.

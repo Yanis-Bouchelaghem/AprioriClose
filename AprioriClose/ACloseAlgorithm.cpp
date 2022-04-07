@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <thread>
+#include <stdio.h>
 #include "Itemset.h"
 
 ACloseAlgorithm::ACloseAlgorithm(const rapidcsv::Document& document)
@@ -28,6 +29,14 @@ void ACloseAlgorithm::Go(const float minSup)
 		++k;
 	} while(!kItemsets.back().empty());
 
+}
+
+void ACloseAlgorithm::PrintItemsets() const
+{
+	for (size_t i = 0; i < kItemsets.size(); ++i)
+	{
+		std::cout << "\nSize of itemsets L(" << i+1 <<") : " << kItemsets[i].size() << "\n";
+	}
 }
 
 void ACloseAlgorithm::GenerateTIDs(const rapidcsv::Document& document)

@@ -26,6 +26,7 @@ int main()
     timer.Mark();
     algo.Go(0.05f);
     std::cout << "took " << timer.Mark() << " miliseconds\n";
+    algo.PrintItemsets();
     //Save the new document to disk
     //itemset.SaveDocument("Airlines-discretized.csv");
 }
