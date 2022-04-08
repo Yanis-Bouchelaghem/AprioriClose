@@ -21,6 +21,7 @@ private:
 	void GenerateTIDsMultiThreaded(const rapidcsv::Document& document);
 	void GenerateColumnTID(const rapidcsv::Document& document, const size_t iColumn);
 	std::vector<Itemset> GenerateKItemsets(size_t k);
+	void CalculateMetricsMultiThreaded(std::vector<Itemset>& itemsets, const std::vector<std::map<std::string, std::vector<size_t>>>& tids, size_t rowCount);
 	void PruneUnfrequentItemsets(std::vector<Itemset>& itemsets, const float minSup);
 private:
 	std::vector<std::map<std::string, std::vector<size_t>>> tids; //Holds the TID representation of the document.

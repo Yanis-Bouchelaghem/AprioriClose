@@ -19,12 +19,10 @@ void ACloseAlgorithm::Go(const float minSup)
 {
 	const size_t rowCount = document.GetRowCount();
 	do
-	{	
+	{
 		kItemsets.emplace_back(GenerateKItemsets(k));
-		for (auto& item : kItemsets.back())
-		{
-			item.CalculateMetrics(tids, rowCount);
-		}
+		std::cout << "Calculating metrics for " << k << "-itemsets. ";
+		CalculateMetricsMultiThreaded(kItemsets[k-1],tids,document.GetRowCount());
 		PruneUnfrequentItemsets(kItemsets.back(), minSup);
 		++k;
 	} while(!kItemsets.back().empty());
@@ -35,7 +33,7 @@ void ACloseAlgorithm::PrintItemsets() const
 {
 	for (size_t i = 0; i < kItemsets.size(); ++i)
 	{
-		std::cout << "\nSize of itemsets L(" << i+1 <<") : " << kItemsets[i].size() << "\n";
+		std::cout << "Size of itemsets L(" << i+1 <<") : " << kItemsets[i].size() << "\n";
 	}
 }
 
@@ -90,6 +88,7 @@ void ACloseAlgorithm::GenerateColumnTID(const rapidcsv::Document& document ,cons
 
 std::vector<Itemset> ACloseAlgorithm::GenerateKItemsets(size_t k)
 {
+	std::cout << "\nGenerating " << k << "-itemsets... ";
 	std::vector<Itemset> generatedItemsets;
 	//Generate k items
 	if (k == 1)
@@ -125,16 +124,63 @@ std::vector<Itemset> ACloseAlgorithm::GenerateKItemsets(size_t k)
 			}
 		}
 	}
+	std::cout << "Found " << generatedItemsets.size() << " itemsets\n";
 	return generatedItemsets;
+}
+
+void ACloseAlgorithm::CalculateMetricsMultiThreaded(std::vector<Itemset>& itemsets, const std::vector<std::map<std::string, std::vector<size_t>>>& tids, size_t rowCount)
+{
+	const unsigned int minItemsPerThread = 100;
+	size_t hardwareThreadCount = std::thread::hardware_concurrency();
+
+	size_t threadCount = std::min(itemsets.size() / minItemsPerThread, hardwareThreadCount * 2);
+	if (threadCount != 0)
+	{
+		std::cout << "Using " << threadCount << " thread(s)...\n";
+		size_t step = itemsets.size() / threadCount;
+
+		std::vector<std::thread> workers;
+		auto worker = [this, rowCount](std::vector<Itemset>& itemsets, size_t start, size_t end, const std::vector<std::map<std::string, std::vector<size_t>>>& tids) {
+			for (auto it = std::next(itemsets.begin(), start); it != std::next(itemsets.begin(), end); ++it)
+			{
+				it->CalculateMetrics(tids, rowCount);
+			}
+		};
+		for (size_t i = 0; i < threadCount; ++i)
+		{
+			workers.push_back(std::thread{ worker, std::ref(itemsets), step * i, step * (i + 1), std::ref(tids) });
+		}
+		for (auto& worker : workers)
+		{
+			worker.join();
+		}
+		//Finish the rest of the itemsets on this main thread
+		for (auto it = std::next(itemsets.begin(), step * threadCount); it != itemsets.end(); ++it)
+		{
+			it->CalculateMetrics(tids, rowCount);
+		}
+	}
+	else
+	{
+		std::cout << "Using the main thread...\n";
+		for (auto& itemset : itemsets)
+		{
+
+			itemset.CalculateMetrics(tids, rowCount);
+		}
+	}
+
 }
 
 void ACloseAlgorithm::PruneUnfrequentItemsets(std::vector<Itemset>& itemsets, const float minSup)
 {
+	std::cout << "Prunning unfrequent itemsets (MinSup = " << minSup << ")... ";
 	//Move all unfrequent itemsets to the end of the vector.
 	auto toErase = std::remove_if(itemsets.begin(), itemsets.end(), [minSup](const Itemset& itemset) {
 		return itemset.GetSupport() < minSup;
 	});
 	//Erase the unfrequent itemsets.
 	itemsets.erase(toErase, itemsets.end());
+	std::cout << itemsets.size() << " left.\n";
 }
 
